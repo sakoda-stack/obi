@@ -1,555 +1,79 @@
 
-Generate HTML from two Excel files
-1月14日
-·
-sakoda-stack/obi
-·
-main
-·
-+354
--0
-
-アーカイブする
-
-共有する
-
-PR を作成する
-
-
-ファイル内のエクセル２つを読み込んで、見やすい形で、HTMLにしたい。
-NEC～の方は、「10日エクセル」、もう一つは「20日エクセル」として、タイトルをうってページ表示
-イメージフォーマットは、カラムを縦表示にして、見やすく並べる
-そのページでは、セルを選択すれば、コピーできる
-編集ボタンが各PJ毎に設置してあり、それを押せば編集することができる。
-PDF印刷ボタンと、エクセルCSV排出のボタンを設置する
-データは基本的に同フォルダ内のエクセルを読み込む。
-まずは仮で今のエクセルタイトルで作成してみて、ファイル名は後ほど考える。
-他に不明点はあるか？
-コピーする
-Summary
-
-作業フォルダ内の2つのExcelファイルを読み込み、10日/20日エクセルのセクションで縦型（項目名→値）表示するHTMLビューアを追加しました（PJごとの編集ボタン、CSV排出、PDF印刷ボタンを含む）。
-
-セルがコピーしやすいようにテキスト選択を有効化し、読み込み状況やエラー表示も追加しました。
-
-Screenshot
-
-画面イメージ: キャプチャされたスクリーンショット
-
-Testing
-
-⚠️ Not run (not requested).
-
-
-ファイル (1)
-
-index.html
-index.html
-新規
-動いていない
-コピーする
-Summary
-
-各セクションに「ファイル選択」ボタンと隠しファイル入力を追加し、ローカルで開いた場合でもExcelを読み込めるようにしました。
-
-fetch読み込みとファイル選択の双方で同じ描画処理を使うよう整理し、読み込み失敗時の案内も明確化しました。
-
-Screenshot
-
-画面イメージ: キャプチャされたスクリーンショット
-
-Testing
-
-⚠️ Not run (not requested).
-
-
-ファイル (1)
-not foundを解消して
-コピーする
-Summary
-
-ローカルファイル（file://）で開いた場合は自動取得を行わず、ファイル選択を促すことで「not found」表示を回避するようにしました。
-
-取得URLを URL() で構築し、空白を含むファイル名のエンコードをより確実にしました。
-
-Screenshot
-
-画面イメージ: キャプチャされたスクリーンショット
-
-Testing
-
-⚠️ Not run (not requested).
-
-
-ファイル (1)
-ユーザーの添付画像
-なぜプレビューでnotfound?
-コピーする
-以下が「プレビューで Not Found になる理由」です。
-
-なぜプレビューで Not Found になるのか
-プレビュー環境では、index.html 以外のファイル（Excel）が配信されていないため、fetch が Excel ファイルを取得できず Not Found になります。index.html は起動できても、同フォルダの .xlsx を取得するには同じサーバーから静的ファイルとして配信される必要があります。今回の HTML は起動時に指定された2ファイルを自動 fetch するため、プレビュー側でそれらが提供されないと Not Found になります。
-
-具体的には、sheetConfigs で指定している2つの Excel ファイルを fetch で取得する設計のため、プレビュー環境がそれらの Excel を提供していない場合に Not Found が出ます。
-
-どうすれば解消できるか
-ローカルサーバーで index.html と Excel を同じフォルダから配信して開く
-例: python -m http.server 8000 で同フォルダを配信し、http://localhost:8000/index.html をくと Excel 取得が成功します。
-
-プレビュー上で閲覧する場合は「ファイル選択」からExcelを手動読み込みする
-この場合は fetch せず、ユーザーが選択したファイルを FileReader で読み込みます。
-
-必要であれば、プレビュー環境で Not Found を出さないように「自動読み込みを完全に無効化」する対応も可能です。
-
-自動読みこみにして
-コピーする
-Summary
-
-自動読み込みを常に実行するように戻し、file:// でも起動時にExcelの取得を試みる挙動に変更しました。
-
-Screenshot
-
-画面イメージ: キャプチャされたスクリーンショット
-
-Testing
-
-⚠️ Not run (not requested).
-
-
-ファイル (1)
-まだ　not foundするべきことがあったら、教えて
-コピーする
-以下が「まだ Not Found になるケース」と理由です。
-
-Not Found になる主なケース
-プレビュー環境が Excel ファイルを配信していない場合
-本ページは起動時に fetch で sheetConfigs のファイルを取得しますが、プレビュー側がその Excel ファイルを配信していないと 404 になります。
-
-file:// で開いた場合
-ブラウザは file:// からの fetch を制限することが多く、Excelファイルが同フォルダにあっても取得に失敗することがあります。renderSheet は常に fetch を行うため、file:// 起動だと Not Found（または取得エラー）になり得ます。
-
-Excelファイル名が変更されている/場所が違う場合
-sheetConfigs に固定のファイル名があり、実ファイル名や配置が一致しないと 404 になります。
-
-解消方法（状況別）
-プレビュー環境の場合
-プレビュー側に Excel を置けないなら、「ファイル選択」で手動読み込みしてください（fetch 不要になります）。
-
-ローカルで見る場合
-python -m http.server 8000 などで Excel と index.html を同じフォルダで配信し、http://localhost:8000/index.html で開くと自動読み込みが成功します。
-
-もし「プレビューでも自動読み込みで Not Found を出したくない」などの要望があれば、プレビュー環境では自動読み込みを無効化する制御も追加できます。
-
-プレビュー環境の場合\nプレビュー側に Excel を置けないなら、「ファイル選択」で手動読み込みしてください（fetch 不要になります）。どうやるのか？
-コピーする
-以下の通り対応しました。ページ内に「ファイル選択の手順」を明記してあるので、プレビューで Not Found が出た場合でも迷わず操作できます。
-
-Summary
-各セクションに「プレビューでNot Foundが出る場合のファイル選択手順」を表示し、Excelを手動読み込みする操作方法を画面内に明示しました。
-
-Screenshot
-画面イメージ: キャプチャされたスクリーンショット
-
-Testing
-⚠️ Not run (not requested).
-
-使い方（画面内の案内どおり）
-各セクションの 「ファイル選択」 ボタンを押す
-
-表示したい Excel（10日エクセル / 20日エクセル）を選択
-
-自動で読み込まれて表示されます
-
-この手順は画面内にも表示されています。
-
-
-ファイル (1)
-ユーザーの添付画像
-どこ？
-コピーする
-Summary
-
-プレビューでNot Foundが出た場合の手順を、ページ最上部の案内として明確に表示しました。
-
-既存の各セクション内案内は維持し、場所が分かるように補強しています。
-
-Screenshot
-
-ブラウザツールでのスクリーンショット取得を試みましたが、Playwrightの起動エラー（TargetClosedError）により取得できませんでした。
-
-Testing
-
-⚠️ Not run (not requested).
-
-
-ファイル (1)
-
-index.html
-index.html
-新規
-
-
-
-差分
-ログ
-
-index.html
-index.html
-新規
-+354
--0
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Excelビューア</title>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEBEN | Detached Housing Alliance Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Noto+Sans+JP:wght@300;400;500;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <style>
-      :root {
-        color-scheme: light;
-        font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-      }
-      body {
-        margin: 0;
-        padding: 24px;
-        background: #f6f7fb;
-        color: #1f2937;
-      }
-      h1 {
-        margin-bottom: 16px;
-      }
-      .notice {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        padding: 16px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        color: #1e3a8a;
-      }
-      .notice ol {
-        margin: 8px 0 0 20px;
-      }
-      .sheet-section {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-        margin-bottom: 24px;
-      }
-      .section-header {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
-      }
-      .section-title {
-        font-size: 20px;
-        font-weight: 600;
-      }
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-      .file-input {
-        display: none;
-      }
-      button {
-        border: none;
-        background: #2563eb;
-        color: #fff;
-        padding: 8px 14px;
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      button.secondary {
-        background: #64748b;
-      }
-      .projects {
-        display: grid;
-        gap: 16px;
-      }
-      .project-card {
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 16px;
-        background: #f8fafc;
-      }
-      .project-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 12px;
-      }
-      .project-title {
-        font-weight: 600;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #ffffff;
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      th,
-      td {
-        border-bottom: 1px solid #e2e8f0;
-        padding: 8px 10px;
-        text-align: left;
-        font-size: 13px;
-        vertical-align: top;
-        user-select: text;
-      }
-      th {
-        width: 30%;
-        background: #f1f5f9;
-        font-weight: 600;
-      }
-      tr:last-child th,
-      tr:last-child td {
-        border-bottom: none;
-      }
-      .status {
-        margin-top: 12px;
-        color: #475569;
-        font-size: 13px;
-      }
-      .error {
-        color: #dc2626;
-      }
+        :root {
+            --color-gold: #C5A059;
+            --color-gold-light: #EAD196;
+            --color-black-deep: #050505;
+            --color-black-soft: #121212;
+            --color-slate-dark: #1E1E1E;
+        }
+        body {
+            font-family: 'Noto+Sans+JP', sans-serif;
+            background-color: var(--color-black-deep);
+            color: #FFFFFF;
+            letter-spacing: 0.03em;
+            scroll-behavior: smooth;
+        }
+        .font-serif-luxury {
+            font-family: 'Noto Serif JP', serif;
+        }
+        .font-brand {
+            font-family: 'Cinzel', serif;
+        }
+        .text-gold { color: var(--color-gold); }
+        .bg-gold { background-color: var(--color-gold); }
+        .border-gold { border-color: var(--color-gold); }
+        
+        .luxury-card {
+            background: var(--color-black-soft);
+            border: 1px solid rgba(197, 160, 89, 0.15);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .luxury-card:hover {
+            border-color: var(--color-gold);
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.1);
+            transform: translateY(-4px);
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
+        }
+        .text-gradient-gold {
+            background: linear-gradient(to right, #C5A059, #F3E5AB, #C5A059);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .noir-overlay {
+            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.2) 0%, rgba(5, 5, 5, 0.9) 100%);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-black-deep); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-gold); }
     </style>
-  </head>
-  <body>
-    <h1>Excelデータ表示</h1>
-    <div class="notice">
-      プレビュー画面で「Not Found」が出る場合は、以下の手順でExcelを手動読み込みしてください。
-      <ol>
-        <li>各セクションの「ファイル選択」を押す</li>
-        <li>表示したいExcelファイルを選ぶ（10日/20日）</li>
-      </ol>
-    </div>
-
-    <section class="sheet-section" id="sheet-10">
-      <div class="section-header">
-        <div class="section-title">10日エクセル</div>
-        <div class="actions">
-          <button class="secondary" data-action="select" data-target="sheet-10">ファイル選択</button>
-          <button class="secondary" data-action="csv" data-target="sheet-10">CSV排出</button>
-          <button data-action="print" data-target="sheet-10">PDF印刷</button>
-        </div>
-      </div>
-      <div class="status">
-        プレビューでNot Foundが出る場合は「ファイル選択」を押して、
-        表示したいExcel（10日エクセル）を選んでください。
-      </div>
-      <input class="file-input" type="file" accept=".xlsx,.xls" data-file-input />
-      <div class="projects" data-projects></div>
-      <div class="status" data-status></div>
-    </section>
-
-    <section class="sheet-section" id="sheet-20">
-      <div class="section-header">
-        <div class="section-title">20日エクセル</div>
-        <div class="actions">
-          <button class="secondary" data-action="select" data-target="sheet-20">ファイル選択</button>
-          <button class="secondary" data-action="csv" data-target="sheet-20">CSV排出</button>
-          <button data-action="print" data-target="sheet-20">PDF印刷</button>
-        </div>
-      </div>
-      <div class="status">
-        プレビューでNot Foundが出る場合は「ファイル選択」を押して、
-        表示したいExcel（20日エクセル）を選んでください。
-      </div>
-      <input class="file-input" type="file" accept=".xlsx,.xls" data-file-input />
-      <div class="projects" data-projects></div>
-      <div class="status" data-status></div>
-    </section>
-
-    <script>
-      const sheetConfigs = [
-        {
-          id: "sheet-10",
-          fileName: "NEC物件情報入力用シート（㈱タカラレーベン）26.1.10  .xlsx",
-        },
-        {
-          id: "sheet-20",
-          fileName: "251220 タカラレーベン帯情報    .xlsx",
-        },
-      ];
-
-      const sheetCache = new Map();
-
-      const statusMessage = (section, message, isError = false) => {
-        const status = section.querySelector("[data-status]");
-        status.textContent = message;
-        status.classList.toggle("error", isError);
-      };
-
-      const buildProjectTable = (headers, row) => {
-        const table = document.createElement("table");
-        headers.forEach((header, index) => {
-          if (!header) return;
-          const tr = document.createElement("tr");
-          const th = document.createElement("th");
-          th.textContent = header;
-          const td = document.createElement("td");
-          const value = row[index] ?? "";
-          td.textContent = value === null ? "" : String(value);
-          tr.append(th, td);
-          table.appendChild(tr);
-        });
-        return table;
-      };
-
-      const buildProjectCard = (headers, row, rowIndex) => {
-        const card = document.createElement("div");
-        card.className = "project-card";
-        const header = document.createElement("div");
-        header.className = "project-header";
-        const title = document.createElement("div");
-        const primaryValue = row.find((value) => value !== undefined && value !== "");
-        title.className = "project-title";
-        title.textContent = primaryValue
-          ? `PJ: ${primaryValue}`
-          : `PJ ${rowIndex + 1}`;
-        const button = document.createElement("button");
-        button.className = "secondary";
-        button.type = "button";
-        button.textContent = "編集";
-        button.addEventListener("click", () => {
-          alert("編集画面へ遷移する想定です。");
-        });
-        header.append(title, button);
-        const table = buildProjectTable(headers, row);
-        card.append(header, table);
-        return card;
-      };
-
-      const parseAndRender = (config, buffer, fileLabel) => {
-        const section = document.getElementById(config.id);
-        const projects = section.querySelector("[data-projects]");
-        projects.innerHTML = "";
-        statusMessage(section, "読み込み中...");
-
-        try {
-          const workbook = XLSX.read(buffer, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const sheet = workbook.Sheets[sheetName];
-          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false });
-          const [headers, ...dataRows] = rows;
-
-          if (!headers || headers.length === 0) {
-            statusMessage(section, "シートにデータがありません。", true);
-            return;
-          }
-
-          const filteredRows = dataRows.filter((row) =>
-            row.some((value) => value !== undefined && value !== "")
-          );
-
-          if (filteredRows.length === 0) {
-            statusMessage(section, "表示できるデータ行がありません。", true);
-            return;
-          }
-
-          filteredRows.forEach((row, index) => {
-            const card = buildProjectCard(headers, row, index);
-            projects.appendChild(card);
-          });
-
-          statusMessage(
-            section,
-            `${filteredRows.length}件のPJを表示中${fileLabel ? ` (${fileLabel})` : ""}`
-          );
-          sheetCache.set(config.id, sheet);
-        } catch (error) {
-          statusMessage(section, `読み込みエラー: ${error.message}`, true);
-        }
-      };
-
-      const renderSheet = async (config) => {
-        const section = document.getElementById(config.id);
-        try {
-          const fileUrl = new URL(config.fileName, window.location.href);
-          const response = await fetch(fileUrl);
-          if (!response.ok) throw new Error("ファイルを取得できません。");
-          const buffer = await response.arrayBuffer();
-          parseAndRender(config, buffer, config.fileName);
-        } catch (error) {
-          statusMessage(
-            section,
-            `読み込みエラー: ${error.message}（同フォルダにある場合はローカルサーバー経由で開くか「ファイル選択」を利用してください）`,
-            true
-          );
-        }
-      };
-
-      const readFileBuffer = (file) =>
-        new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = () => reject(new Error("ファイルを読み込めませんでした。"));
-          reader.readAsArrayBuffer(file);
-        });
-
-      document.querySelectorAll("button[data-action]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const action = button.dataset.action;
-          const target = button.dataset.target;
-          if (action === "print") {
-            window.print();
-            return;
-          }
-          if (action === "csv") {
-            const sheet = sheetCache.get(target);
-            if (!sheet) {
-              alert("先にデータを読み込んでください。");
-              return;
-            }
-            const csv = XLSX.utils.sheet_to_csv(sheet);
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `${target}-export.csv`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-          }
-          if (action === "select") {
-            const section = document.getElementById(target);
-            const input = section.querySelector("[data-file-input]");
-            input?.click();
-          }
-        });
-      });
-
-      document.querySelectorAll("[data-file-input]").forEach((input) => {
-        input.addEventListener("change", async (event) => {
-          const section = event.target.closest(".sheet-section");
-          const targetId = section?.id;
-          const config = sheetConfigs.find((item) => item.id === targetId);
-          const file = event.target.files?.[0];
-          if (!config || !file) return;
-          try {
-            const buffer = await readFileBuffer(file);
-            parseAndRender(config, buffer, file.name);
-          } catch (error) {
-            statusMessage(section, `読み込みエラー: ${error.message}`, true);
-          } finally {
-            event.target.value = "";
-          }
-        });
-      });
-
-      sheetConfigs.forEach((config) => {
-        renderSheet(config);
-      });
-    </script>
-  </body>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
 </html>

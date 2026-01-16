@@ -1,0 +1,8 @@
+
+{
+  "name": "LEBEN Detached Housing Alliance Portal",
+  "description": "An internal portal for sales staff to manage detached housing alliances, featuring a Gemini-powered sales assistant, resource library, and partnership management tools.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
