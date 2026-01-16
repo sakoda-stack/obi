@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LEBEN | Detached Housing Alliance Portal</title>
+
+    <!-- Tailwind（CDNは本番非推奨だが、とりあえず動かす用） -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Noto+Sans+JP:wght@300;400;500;700&family=Cinzel:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --color-gold: #c5a059;
+        --color-gold-light: #ead196;
+        --color-black-deep: #050505;
+        --color-black-soft: #121212;
+        --color-slate-dark: #1e1e1e;
+      }
+      body {
+        font-family: "Noto Sans JP", sans-serif;
+        background-color: var(--color-black-deep);
+        color: #ffffff;
+        letter-spacing: 0.03em;
+        scroll-behavior: smooth;
+      }
+      .font-serif-luxury {
+        font-family: "Noto Serif JP", serif;
+      }
+      .font-brand {
+        font-family: "Cinzel", serif;
+      }
+      .text-gold {
+        color: var(--color-gold);
+      }
+      .bg-gold {
+        background-color: var(--color-gold);
+      }
+      .border-gold {
+        border-color: var(--color-gold);
+      }
+
+      .luxury-card {
+        background: var(--color-black-soft);
+        border: 1px solid rgba(197, 160, 89, 0.15);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+      .luxury-card:hover {
+        border-color: var(--color-gold);
+        box-shadow: 0 0 30px rgba(197, 160, 89, 0.1);
+        transform: translateY(-4px);
+      }
+      .gold-gradient {
+        background: linear-gradient(
+          135deg,
+          var(--color-gold) 0%,
+          var(--color-gold-light) 100%
+        );
+      }
+      .text-gradient-gold {
+        background: linear-gradient(to right, #c5a059, #f3e5ab, #c5a059);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .noir-overlay {
+        background: linear-gradient(
+          to bottom,
+          rgba(5, 5, 5, 0.2) 0%,
+          rgba(5, 5, 5, 0.9) 100%
+        );
+      }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--color-black-deep);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-gold);
+      }
+    </style>
+
+    <!-- importmap（いまの構成を維持） -->
+
+
+    <!-- ★重要：GitHub Pages（/obi/）で 404 にしないため相対パス -->
+    <link rel="stylesheet" href="./index.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+          "react/": "https://esm.sh/react@^19.2.3/",
+          "react": "https://esm.sh/react@^19.2.3",
+          "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+          "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+        }
+      }
+    </script>
+    <script type="module" crossorigin src="/obi/assets/index-D3d4YXZN.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- エントリ（あなたの構成） -->
+  </body>
+</html>
